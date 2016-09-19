@@ -33,14 +33,7 @@ public class ReadXMLFile {
 
     boolean switchWeek;
 
-    public ReadXMLFile(String fileName, String typeName,
-                       int timeInterval, int checkBox, String curr) {
-
-        boolean emptyTypeName;
-        emptyTypeName = typeName.isEmpty();
-
-        boolean emptyCurr;
-        emptyCurr = curr.isEmpty();
+    public ReadXMLFile(String fileName, SettingsData data) {
 
         try {
 
@@ -79,75 +72,82 @@ public class ReadXMLFile {
                     double amount = Double.parseDouble(eElement.getElementsByTagName("amount")
                             .item(0).getTextContent());
 
-                    if(timeInterval == 0) {
-                        if(year != calendar.get(Calendar.YEAR) || (temp + 1) == nList.getLength()) {
-                            if((temp + 1) == nList.getLength()) {
-                                year--;
-                            } else year = calendar.get(Calendar.YEAR);
-                            if(sum != 0) {
-                                result += (year + 1) + "\t" +
-                                        Integer.toString((int)Math.round(this.sum)) + " " + curr;
-                                sum = 0;
+                    switch(data.getInterval()) {
+                        case SettingsData.YEAR:
+                            if(year != calendar.get(Calendar.YEAR) || (temp + 1) == nList.getLength()) {
+                                if((temp + 1) == nList.getLength()) {
+                                    year--;
+                                } else year = calendar.get(Calendar.YEAR);
+                                if(sum != 0) {
+                                    result += (year + 1) + "\t" +
+                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr();
+                                    sum = 0;
+                                }
                             }
-                        }
-                    } else if(timeInterval == 1) {
-                        if(month != calendar.get(Calendar.MONTH) || (temp + 1) == nList.getLength()) {
-                            if((temp + 1) == nList.getLength()) {
-                                month--;
-                            } else month = calendar.get(Calendar.MONTH);
-                            if(sum != 0) {
-                                results.add(calendar.get(Calendar.YEAR) + "-" + months[month + 1] +
-                                        "\t" + Integer.toString((int)Math.round(this.sum)) + " " + curr);
-                                sum = 0;
+                            break;
+                        case SettingsData.MONTH:
+                            if(month != calendar.get(Calendar.MONTH) || (temp + 1) == nList.getLength()) {
+                                if((temp + 1) == nList.getLength()) {
+                                    month--;
+                                } else month = calendar.get(Calendar.MONTH);
+                                if(sum != 0) {
+                                    results.add(calendar.get(Calendar.YEAR) + "-" + months[month + 1] +
+                                            "\t" + Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
+                                    sum = 0;
+                                }
                             }
-                        }
-                    } else if(timeInterval == 2) {
-                        switchWeek = false;
-                        if(dayOfWeek < calendar.get(Calendar.DAY_OF_WEEK)) {
-                            switchWeek = true;
-                        }
+                            break;
+                        case SettingsData.WEEK:
+                            switchWeek = false;
+                            if(dayOfWeek < calendar.get(Calendar.DAY_OF_WEEK)) {
+                                switchWeek = true;
+                            }
 
-                        dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                            dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
-                        if(switchWeek || (temp + 1) == nList.getLength()) {
-                            week++;
-                            if(year != calendar.get(Calendar.YEAR)) {
-                                year = calendar.get(Calendar.YEAR);
-                                week = 0;
+                            if(switchWeek || (temp + 1) == nList.getLength()) {
+                                week++;
+                                if(year != calendar.get(Calendar.YEAR)) {
+                                    year = calendar.get(Calendar.YEAR);
+                                    week = 0;
+                                }
+                                if(sum != 0) {
+                                    result += year + "-" + calendar.get(Calendar.MONTH) + ", " + week + "\t" +
+                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr();
+                                    sum = 0;
+                                }
                             }
-                            if(sum != 0) {
-                                result += year + "-" + calendar.get(Calendar.MONTH) + ", " + week + "\t" +
-                                        Integer.toString((int)Math.round(this.sum)) + " " + curr;
-                                sum = 0;
+                            break;
+                        case SettingsData.DAY:
+                            if(day != calendar.get(Calendar.DAY_OF_MONTH) || (temp + 1) == nList.getLength()) {
+                                if((temp + 1) == nList.getLength()) {
+                                    day--;
+                                } else day = calendar.get(Calendar.DAY_OF_MONTH);
+                                if(sum != 0) {
+                                    result += calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) +
+                                            "-" + (day+1) + "\t" +
+                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr();
+                                    sum = 0;
+                                }
                             }
-                        }
-                    } else if(timeInterval == 3) {
-                        if(day != calendar.get(Calendar.DAY_OF_MONTH) || (temp + 1) == nList.getLength()) {
-                            if((temp + 1) == nList.getLength()) {
-                                day--;
-                            } else day = calendar.get(Calendar.DAY_OF_MONTH);
-                            if(sum != 0) {
-                                result += calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) +
-                                        "-" + (day+1) + "\t" +
-                                        Integer.toString((int)Math.round(this.sum)) + " " + curr;
-                                sum = 0;
-                            }
-                        }
+                            break;
+                        default:
+                            break;
                     }
 
                     if((eElement.getElementsByTagName("type")
                             .item(0).getTextContent()
-                            .equals(typeName) || emptyTypeName) &&
-                            (aElement.getAttribute("curr").equals(curr) || emptyCurr)) {
-                        if(checkBox == 0) {
+                            .equals(data.getOperation()) || data.getOperation().isEmpty()) &&
+                            (aElement.getAttribute("curr").equals(data.getCurr()) || data.getCurr().isEmpty())) {
+                        if(data.getAmount() == data.ONLY_NEGATIVE) {
                             if(amount < 0) {
                                 sum += amount;
                             }
                         }
-                        if(checkBox == 1) {
+                        if(data.getAmount() == data.ALL) {
                             sum += amount;
                         }
-                        if(checkBox == 2) {
+                        if(data.getAmount() == data.ONLY_POSITIVE) {
                             if(amount > 0) {
                                 sum += amount;
                             }

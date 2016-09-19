@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextMenu;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,9 +26,9 @@ public class CalculatorPKO extends AppCompatActivity {
     Button bt_read;
     ListView lv_Result;
 
-    FloatingActionButton fab;
-
     String fileName;
+
+    SettingsData data;
 
     private static final int REQUEST_PATH = 1;
     private static final int REQUEST_CHANGED_PATH = 2;
@@ -43,14 +42,11 @@ public class CalculatorPKO extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        data = new SettingsData();
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-/*                registerForContextMenu(view);
-                openContextMenu(view);
-                unregisterForContextMenu(view);*/
-
                 Intent intent = new Intent(CalculatorPKO.this, ChangeFileName_Activity.class);
                 intent.putExtra("SetFileName", fileName);
                 startActivityForResult(intent, REQUEST_CHANGED_PATH);
@@ -74,23 +70,20 @@ public class CalculatorPKO extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    String typeName;
-                    typeName = "Płatność kartą";
+                    /*data.setOperation("Płatność kartą");
 
-                    int timeInterval;
-                    timeInterval = 1;
+                    data.setInterval(SettingsData.MONTH);
 
-                    int checkBox = 0;
-                    /*if(jRadioButton_Negative.isSelected())
+                    data.setAmount(SettingsData.ONLY_NEGATIVE);
+                    *//*if(jRadioButton_Negative.isSelected())
                         checkBox = 0;
                     else if(jRadioButton_All.isSelected())
                         checkBox = 1;
                     else if(jRadioButton_Positive.isSelected())
                         checkBox = 2;
-                    else throw new Exception("checkBox not working!!!");*/
+                    else throw new Exception("checkBox not working!!!");*//*
 
-                    String curr;
-                    curr = "PLN";
+                    data.setCurr("PLN");*/
 
                     if(fileName == null || fileName.isEmpty()) {
                         Snackbar.make(view, "Error: Open XML file!", Snackbar.LENGTH_LONG)
@@ -98,7 +91,7 @@ public class CalculatorPKO extends AppCompatActivity {
 
                         throw new Exception("fileName not exist!!!");
                     }
-                    ReadXMLFile readXMLFile = new ReadXMLFile(fileName, typeName, timeInterval, checkBox, curr);
+                    ReadXMLFile readXMLFile = new ReadXMLFile(fileName, data);
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(CalculatorPKO.this,
                             android.R.layout.simple_list_item_1, readXMLFile.getResults());
@@ -126,16 +119,12 @@ public class CalculatorPKO extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(CalculatorPKO.this, Settings.class);
-            intent.putExtra("SetFileName", fileName);
+            intent.putExtra("SetOperation", data.getOperation());
+            intent.putExtra("SetInterval", data.getInterval());
+            intent.putExtra("SetAmount", data.getAmount());
+            intent.putExtra("SetCurr", data.getCurr());
             startActivityForResult(intent, REQUEST_SETTINGS);
-        } /*else if (id == R.id.action_operation) {
-            Toast.makeText(CalculatorPKO.this, getString(R.string.action_operation), Toast.LENGTH_LONG).show();
-        } else if (id == R.id.action_time) {
-            Toast.makeText(CalculatorPKO.this, getString(R.string.action_time), Toast.LENGTH_LONG).show();
-        } else if (id == R.id.action_curr) {
-            Toast.makeText(CalculatorPKO.this, getString(R.string.action_curr), Toast.LENGTH_LONG).show();
-        }*/
-
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -171,15 +160,28 @@ public class CalculatorPKO extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         // See which child activity is calling us back.
-        if (requestCode == REQUEST_PATH) {
-            if (resultCode == RESULT_OK) {
-                fileName = data.getStringExtra("GetPath")+ "/" + data.getStringExtra("GetFileName");
-                tv_FileName.setText(data.getStringExtra("GetFileName"));
-            }
-        } else if (requestCode == REQUEST_CHANGED_PATH) {
-            if (resultCode == RESULT_OK) {
-                fileName = data.getStringExtra("GetFileName");
-                tv_FileName.setText(fileName);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_PATH:
+                    fileName = data.getStringExtra("GetPath") + "/" + data.getStringExtra("GetFileName");
+                    tv_FileName.setText(data.getStringExtra("GetFileName"));
+                    break;
+                case REQUEST_CHANGED_PATH:
+                    fileName = data.getStringExtra("GetFileName");
+                    tv_FileName.setText(fileName);
+                    break;
+                case REQUEST_SETTINGS:
+                    if(data.getStringExtra("GetOperation") != null)
+                        this.data.setOperation(data.getStringExtra("GetOperation"));
+                    if(data.getIntExtra("GetInterval", -1) != -1)
+                        this.data.setInterval(data.getIntExtra("GetInterval", -1));
+                    if(data.getIntExtra("GetAmount", -1) != -1)
+                        this.data.setAmount(data.getIntExtra("GetAmount", -1));
+                    if(data.getStringExtra("GetCurr") != null)
+                        this.data.setCurr(data.getStringExtra("GetCurr"));
+                    break;
+                default:
+                    break;
             }
         }
     }
