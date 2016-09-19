@@ -20,7 +20,7 @@ public class SettingsData {
 
     public SettingsData() {
         this.operation = "Płatność kartą";
-        this.interval = MONTH;
+        this.interval = YEAR;
         this.amount = ONLY_NEGATIVE;
         this.curr = "PLN";
     }

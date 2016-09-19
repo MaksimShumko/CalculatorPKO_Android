@@ -3,6 +3,8 @@ package com.maksim.calculatorpko;
 /**
  * Created by Maksim on 2016-09-16.
  */
+import android.util.Log;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
@@ -27,7 +29,6 @@ public class ReadXMLFile {
 
     double sum = 0;
     List<String> results = new ArrayList<String>();
-    String result = "";
 
     int year = 0, month = 1, week = 0, dayOfWeek = 0, day = 0;
 
@@ -79,8 +80,8 @@ public class ReadXMLFile {
                                     year--;
                                 } else year = calendar.get(Calendar.YEAR);
                                 if(sum != 0) {
-                                    result += (year + 1) + "\t" +
-                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr();
+                                    results.add((year + 1) + "\t" +
+                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
                             }
@@ -112,8 +113,8 @@ public class ReadXMLFile {
                                     week = 0;
                                 }
                                 if(sum != 0) {
-                                    result += year + "-" + calendar.get(Calendar.MONTH) + ", " + week + "\t" +
-                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr();
+                                    results.add(year + "-" + calendar.get(Calendar.MONTH) + ", " + week + "\t" +
+                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
                             }
@@ -124,9 +125,9 @@ public class ReadXMLFile {
                                     day--;
                                 } else day = calendar.get(Calendar.DAY_OF_MONTH);
                                 if(sum != 0) {
-                                    result += calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) +
+                                    results.add(calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) +
                                             "-" + (day+1) + "\t" +
-                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr();
+                                            Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
                             }
