@@ -17,10 +17,11 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Settings:"
         android:id="@+id/textView_sett"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
         android:textSize="25dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_below="@+id/button_finish"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="14dp" />
 
     <LinearLayout
         android:background="@drawable/back"
@@ -182,6 +183,15 @@
         android:id="@+id/textView2"
         android:layout_marginTop="22dp"
         android:layout_below="@+id/textView_sett"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;"
+        android:id="@+id/button_finish"
+        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>
