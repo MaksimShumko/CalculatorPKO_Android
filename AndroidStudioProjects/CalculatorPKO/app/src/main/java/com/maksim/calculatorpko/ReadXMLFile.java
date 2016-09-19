@@ -69,6 +69,7 @@ public class ReadXMLFile {
 
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
+                    System.out.println(calendar);
 
                     double amount = Double.parseDouble(eElement.getElementsByTagName("amount")
                             .item(0).getTextContent());
@@ -80,7 +81,7 @@ public class ReadXMLFile {
                                     year--;
                                 } else year = calendar.get(Calendar.YEAR);
                                 if(sum != 0) {
-                                    results.add((year + 1) + "\t" +
+                                    results.add((year + 1) + "\t\t" +
                                             Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
@@ -93,7 +94,7 @@ public class ReadXMLFile {
                                 } else month = calendar.get(Calendar.MONTH);
                                 if(sum != 0) {
                                     results.add(calendar.get(Calendar.YEAR) + "-" + months[month + 1] +
-                                            "\t" + Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
+                                            "\t\t" + Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
                             }
@@ -113,7 +114,8 @@ public class ReadXMLFile {
                                     week = 0;
                                 }
                                 if(sum != 0) {
-                                    results.add(year + "-" + calendar.get(Calendar.MONTH) + ", " + week + "\t" +
+                                    results.add(year + "-" + (calendar.get(Calendar.MONTH)+1) + ", " +
+                                            calendar.get(Calendar.WEEK_OF_YEAR) + "\t\t" +
                                             Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
@@ -125,8 +127,8 @@ public class ReadXMLFile {
                                     day--;
                                 } else day = calendar.get(Calendar.DAY_OF_MONTH);
                                 if(sum != 0) {
-                                    results.add(calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) +
-                                            "-" + (day+1) + "\t" +
+                                    results.add(calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1) +
+                                            "-" + (day+1) + "\t\t" +
                                             Integer.toString((int)Math.round(this.sum)) + " " + data.getCurr());
                                     sum = 0;
                                 }
